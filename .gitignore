@@ -1,0 +1,10 @@
+# まず全て無視
+/*
+
+# .gitignore 自身は追跡
+!/.gitignore
+
+# 3フォルダだけ許可
+!/Mover/
+!/MoverExamples/
+!/MoverTests/
