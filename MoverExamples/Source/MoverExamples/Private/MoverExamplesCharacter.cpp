@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+
 #include "MoverExamplesCharacter.h"
 #include "Components/InputComponent.h"
 #include "Engine/BlueprintGeneratedClass.h"
@@ -20,7 +21,6 @@ static const FName Name_CharacterMotionComponent(TEXT("MoverComponent"));
 
 AMoverExamplesCharacter::AMoverExamplesCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	, IsBubbleCpp(false)  // Initialize IsBubbleCpp to false
 	, NavMoverComponent(nullptr)
 {
 	CharacterMotionComponent = CreateDefaultSubobject<UCharacterMoverComponent>(Name_CharacterMotionComponent);
@@ -46,28 +46,6 @@ AMoverExamplesCharacter::AMoverExamplesCharacter(const FObjectInitializer& Objec
 	}
 }
 
-void AMoverExamplesCharacter::SetIsBubble(bool bNewBubbleState)
-{
-	if (IsBubbleCpp != bNewBubbleState)
-	{
-		IsBubbleCpp = bNewBubbleState;
-		
-		// Optional: Add any additional logic when bubble state changes
-		// For example, logging or triggering events
-		UE_LOG(LogTemp, Log, TEXT("Bubble mode changed to: %s"), IsBubbleCpp ? TEXT("True") : TEXT("False"));
-	}
-}
-
-void AMoverExamplesCharacter::ToggleIsBubble()
-{
-	SetIsBubble(!IsBubbleCpp);
-}
-
-bool AMoverExamplesCharacter::ShouldProcessLanding_Implementation() const
-{
-	// If IsBubbleCpp is true, prevent landing processing
-	return !IsBubbleCpp;
-}
 
 // Called every frame
 void AMoverExamplesCharacter::Tick(float DeltaTime)
@@ -75,6 +53,7 @@ void AMoverExamplesCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Do whatever you want here. By now we have the latest movement state and latest input processed.
+
 
 	// Spin camera based on input
 	if (APlayerController* PC = Cast<APlayerController>(Controller))
@@ -122,6 +101,7 @@ void AMoverExamplesCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	}
 }
 
+
 FVector AMoverExamplesCharacter::GetNavAgentLocation() const
 {
 	FVector AgentLocation = FNavigationSystem::InvalidLocation;
@@ -161,8 +141,10 @@ void AMoverExamplesCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMove
 	}
 }
 
+
 void AMoverExamplesCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContext& OutInputCmd)
 {
+
 	// Generate user commands. Called right before the Character movement simulation will tick (for a locally controlled pawn)
 	// This isn't meant to be the best way of doing a camera system. It is just meant to show a couple of ways it may be done
 	// and to make sure we can keep distinct the movement, rotation, and view angles.
@@ -258,6 +240,7 @@ void AMoverExamplesCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContex
 	// Figure out intended orientation
 	CharacterInputs.OrientationIntent = FVector::ZeroVector;
 
+
 	if (bHasAffirmativeMoveInput)
 	{
 		if (bOrientRotationToMovement)
@@ -288,13 +271,7 @@ void AMoverExamplesCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContex
 	CharacterInputs.bIsJumpPressed = bIsJumpPressed;
 	CharacterInputs.bIsJumpJustPressed = bIsJumpJustPressed;
 
-	// Handle bubble mode - force flying mode when IsBubbleCpp is true
-	if (IsBubbleCpp)
-	{
-		// Force Flying mode to prevent landing processing
-		CharacterInputs.SuggestedMovementMode = DefaultModeNames::Flying;
-	}
-	else if (bShouldToggleFlying)
+	if (bShouldToggleFlying)
 	{
 		if (!bIsFlyingActive)
 		{
@@ -341,6 +318,7 @@ void AMoverExamplesCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContex
 	// Clear/consume temporal movement inputs. We are not consuming others in the event that the game world is ticking at a lower rate than the Mover simulation. 
 	// In that case, we want most input to carry over between simulation frames.
 	{
+
 		bIsJumpJustPressed = false;
 		bShouldToggleFlying = false;
 	}
