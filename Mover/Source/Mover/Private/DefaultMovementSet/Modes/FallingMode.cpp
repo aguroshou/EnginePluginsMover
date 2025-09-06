@@ -251,6 +251,19 @@ void UFallingMode::OnUnregistered()
 
 void UFallingMode::ProcessLanded(const FFloorCheckResult& FloorResult, FVector& Velocity, FRelativeBaseInfo& BaseInfo, FMoverTickEndData& TickEndData) const
 {
+    const UMoverComponent* MoverComp = GetMoverComponent();
+    
+    // AMoverExamplesCharacterの場合はIsBubbleをチェック
+    if (const AMoverExamplesCharacter* ExamplesChar = Cast<AMoverExamplesCharacter>(MoverComp->GetOwner()))
+    {
+        if (ExamplesChar->IsBubble)
+        {
+            // IsBubbleがtrueの場合は着地処理をスキップ
+            return;
+        }
+    }
+    
+    // 通常の着地処理を実行
 	const UMoverComponent* MoverComp = GetMoverComponent();
 	UMoverBlackboard* SimBlackboard = MoverComp->GetSimBlackboard_Mutable();
 

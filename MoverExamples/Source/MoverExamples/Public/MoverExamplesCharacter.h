@@ -26,6 +26,40 @@ public:
 	// Sets default values for this pawn's properties
 	AMoverExamplesCharacter(const FObjectInitializer& ObjectInitializer);
 
+	/** 
+	 * Get the current bubble mode state
+	 * Returns true if the character is in bubble mode (no landing processing)
+	 */
+	UFUNCTION(BlueprintPure, Category="Movement|Bubble")
+	bool GetIsBubble() const { return IsBubbleCpp; }
+
+	/** 
+	 * Set the bubble mode state
+	 * If true, disables landing processing and keeps the character in falling mode
+	 */
+	UFUNCTION(BlueprintCallable, Category="Movement|Bubble")
+	void SetIsBubble(bool bNewBubbleState);
+
+	/** 
+	 * Toggle the bubble mode state
+	 * Switches between normal movement and bubble mode
+	 */
+	UFUNCTION(BlueprintCallable, Category="Movement|Bubble")
+	void ToggleIsBubble();
+
+	/** 
+	 * Called to check if landing processing should occur
+	 * Override this in Blueprint or C++ to customize landing behavior
+	 */
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Movement|Bubble")
+	bool ShouldProcessLanding() const;
+
+	/** 
+	 * Native implementation of ShouldProcessLanding - can be overridden in C++
+	 * Returns false if IsBubbleCpp is true, preventing landing
+	 */
+	UFUNCTION(BlueprintCallable, Category="Movement|Bubble")
+	virtual bool ShouldProcessLanding_Implementation() const;
 
 public:
 	// Called every frame
@@ -112,8 +146,15 @@ protected:
 	/** Holds functionality for nav movement data and functions */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient, Category="Nav Movement")
 	TObjectPtr<UNavMoverComponent> NavMoverComponent;
-	
+
 private:
+	/** 
+	 * Internal bubble state variable
+	 * If true, disables landing processing and keeps the character in falling mode
+	 * Use SetIsBubble() and GetIsBubble() functions to access from Blueprint
+	 */
+	bool IsBubbleCpp = false;
+
 	FVector LastAffirmativeMoveInput = FVector::ZeroVector;	// Movement input (intent or velocity) the last time we had one that wasn't zero
 
 	FVector CachedMoveInputIntent = FVector::ZeroVector;
